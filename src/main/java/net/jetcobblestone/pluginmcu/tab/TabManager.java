@@ -19,12 +19,13 @@ import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class TabManager {
 
     private TeamManager teamManager;
-    private final Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+    private final Scoreboard scoreboard = Objects.requireNonNull(Bukkit.getScoreboardManager()).getMainScoreboard();
     private final List<EntityPlayer> fakeDisplayedPlayers = new ArrayList<>();
 
     public void init(TeamManager teamManager) {

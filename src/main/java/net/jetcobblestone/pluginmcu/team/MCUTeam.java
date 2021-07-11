@@ -32,22 +32,22 @@ public class MCUTeam{
         tabManager.updateTab();
     }
 
-    public void addPlayer(Player player, TeamManager teamManager) {
+    public void addPlayer(Player player) {
         if (players.size() >= 3) {
             player.sendMessage(ChatColor.RED + "This team is full!");
             return;
         }
 
-        TeamPlayer teamPlayer = teamManager.getTeamPlayer(player);
-        if (teamPlayer == null) {
-            teamPlayer = new TeamPlayer(player, teamManager);
-        }
-        else if (teamPlayer.getTeam() == this){
+        final TeamPlayer teamPlayer = teamManager.getTeamPlayer(player);
+
+        if (teamPlayer.getTeam() == this){
             player.sendMessage(ChatColor.RED + "You are already on this team");
             return;
         }
         else {
-            teamPlayer.getTeam().removePlayer(teamPlayer);
+            if (teamPlayer.getTeam() != null) {
+                teamPlayer.getTeam().removePlayer(teamPlayer);
+            }
         }
 
         players.add(teamPlayer);
@@ -58,10 +58,11 @@ public class MCUTeam{
         tabManager.updateTab();
     }
 
-    public void removePlayer(TeamPlayer player) {
-        if (players.contains(player)) {
-            players.remove(player);
-            team.removeEntry(player.getPlayer().getName());
+    public void removePlayer(TeamPlayer teamPlayer) {
+        if (players.contains(teamPlayer)) {
+            players.remove(teamPlayer);
+            team.removeEntry(teamPlayer.getPlayer().getName());
+            teamPlayer.setTeam(null);
             tabManager.updateTab();
         }
     }

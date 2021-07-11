@@ -8,8 +8,9 @@ public class TeamPlayer {
     @Getter private final Player player;
     @Setter @Getter private MCUTeam team;
 
-    protected TeamPlayer(Player player, TeamManager teamManager) {
+    protected TeamPlayer(Player player) {
         this.player = player;
-        teamManager.addTeamPlayer(this);
     }
+
+
 }

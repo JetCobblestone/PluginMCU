@@ -1,5 +1,6 @@
 package net.jetcobblestone.pluginmcu.commands;
 
+import net.jetcobblestone.pluginmcu.event.EventManager;
 import net.jetcobblestone.pluginmcu.team.MCUTeam;
 import net.jetcobblestone.pluginmcu.team.TeamManager;
 import org.bukkit.ChatColor;
@@ -11,9 +12,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class JoinTeam implements CommandExecutor {
     private final TeamManager teamManager;
+    private final EventManager eventManager;
 
-    public JoinTeam(TeamManager teamManager) {
+    public JoinTeam(TeamManager teamManager, EventManager eventManager) {
         this.teamManager = teamManager;
+        this.eventManager = eventManager;
     }
 
     @Override
@@ -24,6 +27,12 @@ public class JoinTeam implements CommandExecutor {
         }
 
         final Player player = (Player) sender;
+
+        if (eventManager.eventActive()) {
+            player.sendMessage(ChatColor.RED + "You cannot join a team whilst an event is in progress");
+            return false;
+        }
+
         if (args.length != 1) {
             player.sendMessage(ChatColor.RED + "Usage: /jointeam [Team Colour]");
             return false;
@@ -45,7 +54,7 @@ public class JoinTeam implements CommandExecutor {
             }
             return false;
         }
-        team.addPlayer(player, teamManager);
+        team.addPlayer(player);
         return true;
     }
 }

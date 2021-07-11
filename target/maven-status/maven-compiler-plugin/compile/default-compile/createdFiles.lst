@@ -1,3 +1,6 @@
+net\jetcobblestone\pluginmcu\event\MCUEvent.class
+net\jetcobblestone\pluginmcu\commands\LeaveTeam.class
+net\jetcobblestone\pluginmcu\team\TeamListener.class
 net\jetcobblestone\pluginmcu\commands\tabs\JoinTeamTab.class
 net\jetcobblestone\pluginmcu\team\ColourMapper.class
 net\jetcobblestone\pluginmcu\tab\TabListener.class
@@ -9,4 +12,5 @@ net\jetcobblestone\pluginmcu\team\TeamPlayer.class
 net\jetcobblestone\pluginmcu\commands\StartEvent.class
 net\jetcobblestone\pluginmcu\commands\RenameTeam.class
 net\jetcobblestone\pluginmcu\PluginMCU.class
+net\jetcobblestone\pluginmcu\event\EventManager.class
 net\jetcobblestone\pluginmcu\team\TeamManager.class

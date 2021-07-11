@@ -1,6 +1,6 @@
 package net.jetcobblestone.pluginmcu.commands;
 
-import net.jetcobblestone.pluginmcu.tab.TabManager;
+import net.jetcobblestone.pluginmcu.event.EventManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -8,9 +8,9 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 public class StartEvent implements CommandExecutor {
-    private final TabManager tabManager;
-    public StartEvent(TabManager tabManager) {
-        this.tabManager = tabManager;
+    private final EventManager eventManager;
+    public StartEvent(EventManager eventManager) {
+        this.eventManager = eventManager;
     }
 
     @Override
@@ -20,13 +20,18 @@ public class StartEvent implements CommandExecutor {
             return false;
         }
 
+        if (eventManager.eventActive()) {
+            sender.sendMessage(ChatColor.RED + "An event is already in progress");
+            return false;
+        }
+
         if (args.length > 0) {
             sender.sendMessage(ChatColor.RED + "Usage: /startevent");
             return false;
         }
 
         //start event code
-        tabManager.updateTab();
+        eventManager.startEvent();
         return true;
     }
 

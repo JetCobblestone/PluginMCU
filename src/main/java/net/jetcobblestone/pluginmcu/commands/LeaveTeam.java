@@ -12,14 +12,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-public class RenameTeam implements CommandExecutor {
-
-    //TODO - only can change team name before event start
-
+public class LeaveTeam implements CommandExecutor {
     private final TeamManager teamManager;
     private final EventManager eventManager;
 
-    public RenameTeam(TeamManager teamManager, EventManager eventManager) {
+    public LeaveTeam(TeamManager teamManager, EventManager eventManager) {
         this.teamManager = teamManager;
         this.eventManager = eventManager;
     }
@@ -27,32 +24,34 @@ public class RenameTeam implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "Only a player in a team can use this command");
+            sender.sendMessage(ChatColor.RED + "This command can only be used by a player");
             return false;
         }
+
         final Player player = (Player) sender;
 
+        if (args.length != 0) {
+            player.sendMessage(ChatColor.RED + "Usage: /leaveteam");
+            return false;
+        }
+
         if (eventManager.eventActive()) {
-            player.sendMessage(ChatColor.RED + "You cannot rename a team whilst an event is in progress");
+            player.sendMessage(ChatColor.RED + "You cannot leave a team whilst an event is in progress");
             return false;
         }
 
         final TeamPlayer teamPlayer = teamManager.getTeamPlayer(player);
+        final MCUTeam mcuTeam = teamPlayer.getTeam();
 
-        if (teamPlayer == null) {
-            player.sendMessage(ChatColor.RED + "You must be in a team to use this command");
-            return false;
-        }
-        if (args.length != 1) {
-            player.sendMessage(ChatColor.RED + "Usage: /renameteam [New Name]");
+        if (mcuTeam == null) {
+            player.sendMessage(ChatColor.RED + "You are not in a team");
             return false;
         }
 
-        final MCUTeam team = teamPlayer.getTeam();
-
-        team.setDisplayName(args[0]);
-        player.sendMessage(ChatColor.GRAY + "Team " + team.getColourName() + ChatColor.GRAY + " renamed to: " + team.getDisplayName());
+        mcuTeam.removePlayer(teamPlayer);
+        player.sendMessage(ChatColor.GOLD + "You left team " + mcuTeam.getDisplayName());
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+
         return true;
     }
 }

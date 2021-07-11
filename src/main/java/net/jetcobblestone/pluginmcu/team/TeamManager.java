@@ -11,16 +11,22 @@ import java.util.*;
 public class TeamManager {
     @Getter private final Scoreboard teamBoard = Objects.requireNonNull(Bukkit.getScoreboardManager()).getNewScoreboard();
     @Getter private final List<MCUTeam> teamsList = new ArrayList<>();
-    private final Map<Player, TeamPlayer> teamPlayerMap = new HashMap<>();
-
-    protected void addTeamPlayer(TeamPlayer player) {
-        teamPlayerMap.put(player.getPlayer(), player);
-    }
+    private final Map<UUID, TeamPlayer> teamPlayerMap = new HashMap<>();
 
     public TeamManager(TabManager tabManager) {
         final String[] colourStrings = ColourMapper.getColourNames();
         for (final String colour : colourStrings) {
             teamsList.add(new MCUTeam(colour, ColourMapper.colourFromString(colour), this, tabManager));
+        }
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            registerPlayer(player);
+        }
+    }
+
+    protected void registerPlayer(Player player) {
+        final UUID uuid = player.getUniqueId();
+        if (teamPlayerMap.get(uuid) == null) {
+            teamPlayerMap.put(uuid, new TeamPlayer(player));
         }
     }
 
@@ -34,6 +40,6 @@ public class TeamManager {
     }
 
     public TeamPlayer getTeamPlayer(Player player) {
-        return teamPlayerMap.get(player);
+        return teamPlayerMap.get(player.getUniqueId());
     }
 }

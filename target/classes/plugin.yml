@@ -9,6 +9,7 @@ commands:
     description: Adds a player to the team
   RenameTeam:
     description: Renames a team
+  LeaveTeam:
+    description: Removes a player from their team
   StartEvent:
     description: Begins an MCU event
-
