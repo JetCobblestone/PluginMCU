@@ -1,6 +1,6 @@
 package net.jetcobblestone.pluginmcu.commands;
 
-import net.jetcobblestone.pluginmcu.event.EventManager;
+import net.jetcobblestone.pluginmcu.event.MCUEventManager;
 import net.jetcobblestone.pluginmcu.team.MCUTeam;
 import net.jetcobblestone.pluginmcu.team.TeamManager;
 import net.jetcobblestone.pluginmcu.team.TeamPlayer;
@@ -14,9 +14,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class LeaveTeam implements CommandExecutor {
     private final TeamManager teamManager;
-    private final EventManager eventManager;
+    private final MCUEventManager eventManager;
 
-    public LeaveTeam(TeamManager teamManager, EventManager eventManager) {
+    public LeaveTeam(TeamManager teamManager, MCUEventManager eventManager) {
         this.teamManager = teamManager;
         this.eventManager = eventManager;
     }

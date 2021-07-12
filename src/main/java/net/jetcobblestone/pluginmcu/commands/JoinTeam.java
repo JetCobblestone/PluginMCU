@@ -1,6 +1,6 @@
 package net.jetcobblestone.pluginmcu.commands;
 
-import net.jetcobblestone.pluginmcu.event.EventManager;
+import net.jetcobblestone.pluginmcu.event.MCUEventManager;
 import net.jetcobblestone.pluginmcu.team.MCUTeam;
 import net.jetcobblestone.pluginmcu.team.TeamManager;
 import org.bukkit.ChatColor;
@@ -12,9 +12,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class JoinTeam implements CommandExecutor {
     private final TeamManager teamManager;
-    private final EventManager eventManager;
+    private final MCUEventManager eventManager;
 
-    public JoinTeam(TeamManager teamManager, EventManager eventManager) {
+    public JoinTeam(TeamManager teamManager, MCUEventManager eventManager) {
         this.teamManager = teamManager;
         this.eventManager = eventManager;
     }

@@ -1,4 +1,4 @@
-package net.jetcobblestone.pluginmcu;
+package net.jetcobblestone.pluginmcu.util;
 
 public class OrderCounter {
 

@@ -1,6 +1,6 @@
 package net.jetcobblestone.pluginmcu.commands;
 
-import net.jetcobblestone.pluginmcu.event.EventManager;
+import net.jetcobblestone.pluginmcu.event.MCUEventManager;
 import net.jetcobblestone.pluginmcu.team.MCUTeam;
 import net.jetcobblestone.pluginmcu.team.TeamManager;
 import net.jetcobblestone.pluginmcu.team.TeamPlayer;
@@ -17,9 +17,9 @@ public class RenameTeam implements CommandExecutor {
     //TODO - only can change team name before event start
 
     private final TeamManager teamManager;
-    private final EventManager eventManager;
+    private final MCUEventManager eventManager;
 
-    public RenameTeam(TeamManager teamManager, EventManager eventManager) {
+    public RenameTeam(TeamManager teamManager, MCUEventManager eventManager) {
         this.teamManager = teamManager;
         this.eventManager = eventManager;
     }

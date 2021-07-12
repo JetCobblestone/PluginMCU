@@ -13,3 +13,6 @@ commands:
     description: Removes a player from their team
   StartEvent:
     description: Begins an MCU event
+
+depend:
+  - "ProtocolLib"

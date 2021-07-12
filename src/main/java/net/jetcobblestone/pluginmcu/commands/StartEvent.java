@@ -1,6 +1,6 @@
 package net.jetcobblestone.pluginmcu.commands;
 
-import net.jetcobblestone.pluginmcu.event.EventManager;
+import net.jetcobblestone.pluginmcu.event.MCUEventManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -8,8 +8,8 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 public class StartEvent implements CommandExecutor {
-    private final EventManager eventManager;
-    public StartEvent(EventManager eventManager) {
+    private final MCUEventManager eventManager;
+    public StartEvent(MCUEventManager eventManager) {
         this.eventManager = eventManager;
     }
 
