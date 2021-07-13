@@ -39,8 +39,8 @@ public class TabManager {
             final ChatColor teamColour = mcuTeam.getTeam().getColor();
             final com.mojang.datafixers.util.Pair<String, String> skin = ColourMapper.getSkinfromColour(teamColour);
 
-            final String teamName = "!" + playerCounter.getAndInc();
-            final PlayerInfoData playerData = createFakeData(teamName, skin.getFirst(), skin.getSecond(), mcuTeam.getDisplayName());
+            final String teamName = playerCounter.getAndInc();
+            final PlayerInfoData playerData = createFakeData("!" + teamName, skin.getFirst(), skin.getSecond(), mcuTeam.getDisplayName());
             playerDataList.add(playerData);
 
             final WrapperPlayServerScoreboardTeam teamPacket = new WrapperPlayServerScoreboardTeam();
@@ -53,8 +53,8 @@ public class TabManager {
             teamCounter.inc(teamEntries.size());
             for (int i = 0; i < (3 - teamEntries.size()); i++) {
                 final Pair<String, String> graySkin = ColourMapper.getSkinfromColour(ChatColor.GRAY);
-                final String memberName = "!" + playerCounter.getAndInc();
-                playerDataList.add(createFakeData(memberName, graySkin.getFirst(), graySkin.getSecond(), ""));
+                final String memberName = playerCounter.getAndInc();
+                playerDataList.add(createFakeData("!" + memberName, graySkin.getFirst(), graySkin.getSecond(), ""));
 
                 final WrapperPlayServerScoreboardTeam memberTeamPacket = new WrapperPlayServerScoreboardTeam();
                 memberTeamPacket.setMode(0);
