@@ -6,6 +6,7 @@ import net.jetcobblestone.pluginmcu.tab.TabManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 import java.util.*;
 
@@ -19,9 +20,13 @@ public class TeamManager {
         final OrderCounter orderCounter = new OrderCounter(2);
         orderCounter.inc(1);
 
-        for (int i = 0; i < colourStrings.length; i++) {
-            final String colour = colourStrings[i];
-            teamsList.add(new MCUTeam(colour, ColourMapper.colourFromString(colour), this, tabManager, orderCounter.get()));
+        for (final String colour : colourStrings) {
+            final String name = orderCounter.get();
+            final Team team = teamBoard.getTeam(name);
+            if (team != null) {
+                team.unregister();
+            }
+            teamsList.add(new MCUTeam(colour, ColourMapper.colourFromString(colour), this, tabManager, name));
             orderCounter.inc(4);
         }
         for (Player player : Bukkit.getOnlinePlayers()) {

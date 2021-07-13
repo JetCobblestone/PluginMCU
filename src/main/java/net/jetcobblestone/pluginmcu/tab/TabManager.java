@@ -50,7 +50,8 @@ public class TabManager {
             teamPacket.sendPacket(reciever);
 
             final Set<String> teamEntries = mcuTeam.getTeam().getEntries();
-            teamCounter.inc(teamEntries.size());
+
+            teamCounter.inc(1);
             for (int i = 0; i < (3 - teamEntries.size()); i++) {
                 final Pair<String, String> graySkin = ColourMapper.getSkinfromColour(ChatColor.GRAY);
                 final String memberName = playerCounter.getAndInc();
