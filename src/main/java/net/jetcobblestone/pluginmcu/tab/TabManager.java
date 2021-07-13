@@ -2,7 +2,9 @@ package net.jetcobblestone.pluginmcu.tab;
 
 import com.comphenix.protocol.wrappers.*;
 import com.mojang.datafixers.util.Pair;
+import com.sun.org.apache.xpath.internal.operations.Or;
 import net.jetcobblestone.pluginmcu.packets.WrapperPlayServerPlayerInfo;
+import net.jetcobblestone.pluginmcu.packets.WrapperPlayServerScoreboardTeam;
 import net.jetcobblestone.pluginmcu.team.ColourMapper;
 import net.jetcobblestone.pluginmcu.team.MCUTeam;
 import net.jetcobblestone.pluginmcu.team.TeamManager;
@@ -12,10 +14,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 public class TabManager {
 
@@ -30,34 +29,68 @@ public class TabManager {
 
 
     public void updateTab() {
-        Bukkit.getLogger().info("Function ran");
-        final WrapperPlayServerPlayerInfo packetWrapper = new WrapperPlayServerPlayerInfo();
-        packetWrapper.setAction(EnumWrappers.PlayerInfoAction.ADD_PLAYER);
-        List<PlayerInfoData> playerDataList = new ArrayList<>();
+
+        final List<PlayerInfoData> playerDataList = new ArrayList<>();
+        final WrapperPlayServerPlayerInfo addPlayersPacket = new WrapperPlayServerPlayerInfo();
+        addPlayersPacket.setAction(EnumWrappers.PlayerInfoAction.ADD_PLAYER);
+
+        final OrderCounter playerCounter = new OrderCounter(2);
+        final OrderCounter teamCounter = new OrderCounter(2);
 
         for (MCUTeam mcuTeam : teamManager.getTeamsList()) {
             final ChatColor teamColour = mcuTeam.getTeam().getColor();
             final com.mojang.datafixers.util.Pair<String, String> skin = ColourMapper.getSkinfromColour(teamColour);
-            final PlayerInfoData playerData = createFakeData(mcuTeam.getDisplayName(), skin.getFirst(), skin.getSecond());
+
+            final String teamName = playerCounter.nextInt();
+            final PlayerInfoData playerData = createFakeData(teamName, skin.getFirst(), skin.getSecond(), mcuTeam.getDisplayName());
             playerDataList.add(playerData);
 
-            for (int i = 0; i < (3 - mcuTeam.getTeam().getEntries().size()); i++) {
+            final WrapperPlayServerScoreboardTeam teamPacket = new WrapperPlayServerScoreboardTeam();
+            teamPacket.setMode(0);
+            teamPacket.setName(teamCounter.nextInt());
+            teamPacket.setPlayers(Collections.singletonList(teamName));
+            teamPacket.sendPacketAll();
+
+            final Set<String> teamEntries = mcuTeam.getTeam().getEntries();
+
+            for (String entry : mcuTeam.getTeam().getEntries()) {
+                final WrapperPlayServerScoreboardTeam memberTeamPacket = new WrapperPlayServerScoreboardTeam();
+                memberTeamPacket.setMode(0);
+                memberTeamPacket.setName(teamCounter.nextInt());
+                memberTeamPacket.setPlayers(Collections.singletonList(entry));
+                memberTeamPacket.sendPacketAll();
+            }
+
+            for (int i = 0; i < (3 - teamEntries.size()); i++) {
                 final Pair<String, String> graySkin = ColourMapper.getSkinfromColour(ChatColor.GRAY);
-                playerDataList.add(createFakeData("", graySkin.getFirst(), graySkin.getSecond()));
+                final String memberName = playerCounter.nextInt();
+                playerDataList.add(createFakeData(memberName, graySkin.getFirst(), graySkin.getSecond(), ""));
+
+                final WrapperPlayServerScoreboardTeam memberTeamPacket = new WrapperPlayServerScoreboardTeam();
+                memberTeamPacket.setMode(0);
+                memberTeamPacket.setName(teamCounter.nextInt());
+                memberTeamPacket.setPlayers(Collections.singletonList(memberName));
+                memberTeamPacket.sendPacketAll();
             }
         }
 
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            packetWrapper.sendPacket(player);
-        }
+        addPlayersPacket.setData(playerDataList);
+        addPlayersPacket.sendPacketAll();
+
     }
 
-    public PlayerInfoData createFakeData(String name, String texture, String signature) {
+    public PlayerInfoData createFakeData(String name, String texture, String signature, String display) {
+        return createFakeData(name, new WrappedSignedProperty("textures", texture, signature), display);
+
+    }
+
+    public PlayerInfoData createFakeData(String name, WrappedSignedProperty property, String display) {
 
         final UUID uuid = UUID.randomUUID();
 
-        final WrappedGameProfile gameProfile = new WrappedGameProfile(uuid, uuid.toString().substring(0,16));
-        gameProfile.getProperties().put("textures", new WrappedSignedProperty("textures", texture, signature));
-        return new PlayerInfoData(gameProfile, 0, EnumWrappers.NativeGameMode.SURVIVAL, WrappedChatComponent.fromText(name));
+        final WrappedGameProfile gameProfile = new WrappedGameProfile(uuid, name);
+        gameProfile.getProperties().put("textures", property);
+        return new PlayerInfoData(gameProfile, 0, EnumWrappers.NativeGameMode.SURVIVAL, WrappedChatComponent.fromText(display));
     }
+
 }

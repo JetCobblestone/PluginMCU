@@ -1,4 +1,4 @@
-package net.jetcobblestone.pluginmcu.util;
+package net.jetcobblestone.pluginmcu.tab;
 
 public class OrderCounter {
 
@@ -15,6 +15,7 @@ public class OrderCounter {
         for (int i = 0; i < dif; i++) {
             ret.insert(0, "0");
         }
+        ret.insert(0, "!");
         count++;
         return ret.toString();
     }

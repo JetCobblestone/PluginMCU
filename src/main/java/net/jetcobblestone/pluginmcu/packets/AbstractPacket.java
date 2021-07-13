@@ -20,6 +20,7 @@ package net.jetcobblestone.pluginmcu.packets;
 
 import java.lang.reflect.InvocationTargetException;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.comphenix.protocol.PacketType;
@@ -71,6 +72,19 @@ public abstract class AbstractPacket {
             throw new RuntimeException("Cannot send packet.", e);
         }
     }
+
+    public void sendPacketAll() {
+        try {
+            for (Player receiver : Bukkit.getOnlinePlayers()) {
+                ProtocolLibrary.getProtocolManager().sendServerPacket(receiver,
+                        getHandle());
+            }
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException("Cannot send packet.", e);
+        }
+    }
+
+
 
     /**
      * Send the current packet to all online players.

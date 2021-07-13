@@ -15,8 +15,10 @@ public class TeamManager {
 
     public TeamManager(TabManager tabManager) {
         final String[] colourStrings = ColourMapper.getColourNames();
-        for (final String colour : colourStrings) {
-            teamsList.add(new MCUTeam(colour, ColourMapper.colourFromString(colour), this, tabManager));
+
+        for (int i = 0; i < colourStrings.length; i++) {
+            final String colour = colourStrings[i];
+            teamsList.add(new MCUTeam(colour, ColourMapper.colourFromString(colour), this, tabManager, Integer.toString(i*4)));
         }
         for (Player player : Bukkit.getOnlinePlayers()) {
             registerPlayer(player);

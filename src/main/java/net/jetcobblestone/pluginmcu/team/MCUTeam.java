@@ -17,12 +17,14 @@ public class MCUTeam{
     @Getter private final String colourName;
     @Getter private String displayName;
     @Getter private final Team team;
+    @Getter private final String teamName;
 
-    public MCUTeam(String colourName, ChatColor colour, TeamManager teamManager, TabManager tabManager) {
+    public MCUTeam(String colourName, ChatColor colour, TeamManager teamManager, TabManager tabManager, String teamName) {
         this.colourName = colourName;
         this.teamManager = teamManager;
-        this.team = teamManager.getTeamBoard().registerNewTeam(colourName);
+        this.team = teamManager.getTeamBoard().registerNewTeam(teamName);
         this.tabManager = tabManager;
+        this.teamName = teamName;
         team.setColor(colour);
         displayName = team.getColor() + "" + ChatColor.BOLD + colourName;
     }
