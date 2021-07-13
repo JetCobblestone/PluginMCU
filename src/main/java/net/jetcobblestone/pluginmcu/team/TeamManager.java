@@ -11,7 +11,7 @@ import org.bukkit.scoreboard.Team;
 import java.util.*;
 
 public class TeamManager {
-    @Getter private final Scoreboard teamBoard = Objects.requireNonNull(Bukkit.getScoreboardManager()).getMainScoreboard();
+    @Getter private final Scoreboard teamBoard = Objects.requireNonNull(Bukkit.getScoreboardManager()).getNewScoreboard();
     @Getter private final List<MCUTeam> teamsList = new ArrayList<>();
     private final Map<UUID, TeamPlayer> teamPlayerMap = new HashMap<>();
 
