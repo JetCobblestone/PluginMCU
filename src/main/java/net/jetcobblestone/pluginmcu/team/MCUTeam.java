@@ -31,7 +31,6 @@ public class MCUTeam{
 
     public void setDisplayName(String name) {
         displayName = team.getColor() + "" + ChatColor.BOLD + name;
-        tabManager.updateTab();
     }
 
     public void addPlayer(Player player) {
@@ -57,7 +56,6 @@ public class MCUTeam{
         teamPlayer.setTeam(this);
         player.sendMessage(ChatColor.GOLD + "You joined team " + displayName);
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
-        tabManager.updateTab();
     }
 
     public void removePlayer(TeamPlayer teamPlayer) {
@@ -65,7 +63,6 @@ public class MCUTeam{
             players.remove(teamPlayer);
             team.removeEntry(teamPlayer.getPlayer().getName());
             teamPlayer.setTeam(null);
-            tabManager.updateTab();
         }
     }
 

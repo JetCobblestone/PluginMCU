@@ -18,7 +18,7 @@ public class TabListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, tabManager::updateTab, 1L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> tabManager.updateTab(event.getPlayer()), 1L);
     }
 
 }

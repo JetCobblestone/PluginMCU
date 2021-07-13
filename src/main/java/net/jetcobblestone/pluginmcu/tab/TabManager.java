@@ -2,7 +2,6 @@ package net.jetcobblestone.pluginmcu.tab;
 
 import com.comphenix.protocol.wrappers.*;
 import com.mojang.datafixers.util.Pair;
-import com.sun.org.apache.xpath.internal.operations.Or;
 import net.jetcobblestone.pluginmcu.packets.WrapperPlayServerPlayerInfo;
 import net.jetcobblestone.pluginmcu.packets.WrapperPlayServerScoreboardTeam;
 import net.jetcobblestone.pluginmcu.team.ColourMapper;
@@ -24,11 +23,10 @@ public class TabManager {
 
     public void init(TeamManager teamManager) {
         this.teamManager = teamManager;
-        updateTab();
     }
 
 
-    public void updateTab() {
+    public void updateTab(Player reciever) {
 
         final List<PlayerInfoData> playerDataList = new ArrayList<>();
         final WrapperPlayServerPlayerInfo addPlayersPacket = new WrapperPlayServerPlayerInfo();
@@ -41,56 +39,41 @@ public class TabManager {
             final ChatColor teamColour = mcuTeam.getTeam().getColor();
             final com.mojang.datafixers.util.Pair<String, String> skin = ColourMapper.getSkinfromColour(teamColour);
 
-            final String teamName = playerCounter.nextInt();
+            final String teamName = "!" + playerCounter.getAndInc();
             final PlayerInfoData playerData = createFakeData(teamName, skin.getFirst(), skin.getSecond(), mcuTeam.getDisplayName());
             playerDataList.add(playerData);
 
             final WrapperPlayServerScoreboardTeam teamPacket = new WrapperPlayServerScoreboardTeam();
             teamPacket.setMode(0);
-            teamPacket.setName(teamCounter.nextInt());
+            teamPacket.setName(teamCounter.getAndInc());
             teamPacket.setPlayers(Collections.singletonList(teamName));
-            teamPacket.sendPacketAll();
+            teamPacket.sendPacket(reciever);
 
             final Set<String> teamEntries = mcuTeam.getTeam().getEntries();
-
-            for (String entry : mcuTeam.getTeam().getEntries()) {
-                final WrapperPlayServerScoreboardTeam memberTeamPacket = new WrapperPlayServerScoreboardTeam();
-                memberTeamPacket.setMode(0);
-                memberTeamPacket.setName(teamCounter.nextInt());
-                memberTeamPacket.setPlayers(Collections.singletonList(entry));
-                memberTeamPacket.sendPacketAll();
-            }
-
+            teamCounter.inc(teamEntries.size());
             for (int i = 0; i < (3 - teamEntries.size()); i++) {
                 final Pair<String, String> graySkin = ColourMapper.getSkinfromColour(ChatColor.GRAY);
-                final String memberName = playerCounter.nextInt();
+                final String memberName = "!" + playerCounter.getAndInc();
                 playerDataList.add(createFakeData(memberName, graySkin.getFirst(), graySkin.getSecond(), ""));
 
                 final WrapperPlayServerScoreboardTeam memberTeamPacket = new WrapperPlayServerScoreboardTeam();
                 memberTeamPacket.setMode(0);
-                memberTeamPacket.setName(teamCounter.nextInt());
+                memberTeamPacket.setName(teamCounter.getAndInc());
                 memberTeamPacket.setPlayers(Collections.singletonList(memberName));
-                memberTeamPacket.sendPacketAll();
+                memberTeamPacket.sendPacket(reciever);
             }
         }
 
         addPlayersPacket.setData(playerDataList);
-        addPlayersPacket.sendPacketAll();
+        addPlayersPacket.sendPacket(reciever);
 
     }
 
     public PlayerInfoData createFakeData(String name, String texture, String signature, String display) {
-        return createFakeData(name, new WrappedSignedProperty("textures", texture, signature), display);
-
-    }
-
-    public PlayerInfoData createFakeData(String name, WrappedSignedProperty property, String display) {
-
         final UUID uuid = UUID.randomUUID();
 
         final WrappedGameProfile gameProfile = new WrappedGameProfile(uuid, name);
-        gameProfile.getProperties().put("textures", property);
+        gameProfile.getProperties().put("textures", new WrappedSignedProperty("textures", texture, signature));
         return new PlayerInfoData(gameProfile, 0, EnumWrappers.NativeGameMode.SURVIVAL, WrappedChatComponent.fromText(display));
     }
-
 }

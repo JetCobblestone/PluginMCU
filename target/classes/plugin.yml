@@ -1,0 +1,18 @@
+main: net.jetcobblestone.pluginmcu.PluginMCU
+name: "PluginMCU"
+version: '0.1'
+author: JetCobblestone
+api-version: 1.16
+
+commands:
+  JoinTeam:
+    description: Adds a player to the team
+  RenameTeam:
+    description: Renames a team
+  LeaveTeam:
+    description: Removes a player from their team
+  StartEvent:
+    description: Begins an MCU event
+
+depend:
+  - "ProtocolLib"
