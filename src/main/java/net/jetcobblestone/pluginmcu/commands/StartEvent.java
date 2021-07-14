@@ -1,7 +1,6 @@
 package net.jetcobblestone.pluginmcu.commands;
 
 import net.jetcobblestone.pluginmcu.event.MCUEventManager;
-import net.jetcobblestone.pluginmcu.tab.TabManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

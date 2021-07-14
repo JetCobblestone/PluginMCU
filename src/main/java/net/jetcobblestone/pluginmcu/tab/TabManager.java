@@ -64,7 +64,7 @@ public class TabManager implements Listener {
             addPlayers.setAction(EnumWrappers.PlayerInfoAction.ADD_PLAYER);
             final List<PlayerInfoData> toAdd = new ArrayList<>();
 
-            for (int i = 0; i < size; i++) {
+            for (int i = 1; i <= size; i++) {
                 final PlayerInfoData mapData = updateMap.get(i);
                 if (mapData != null) {
                     toAdd.add(mapData);
@@ -146,8 +146,8 @@ public class TabManager implements Listener {
     }
 
     public void set(int i, PlayerInfoData data) {
-        if (i > size || i < 0) {
-            Bukkit.getLogger().severe("Attempted to set player in tap menu outside of the tab menu's range (" + i + ", " + size + ")");
+        if (i > size || i <= 0) {
+            Bukkit.getLogger().severe("Attempted to set player in tab menu outside of the tab menu's range (" + i + ", " + size + ")");
             Thread.dumpStack();
             return;
         }

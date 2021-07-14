@@ -32,7 +32,7 @@ public class MCUTeam{
 
     public void setDisplayName(String name) {
         displayName = team.getColor() + "" + ChatColor.BOLD + name;
-        tabManager.set(teamNumber*4, TabManager.getFromColour(displayName, teamNumber*4, team.getColor()));
+        tabManager.set((teamNumber*4) + 1, TabManager.getFromColour(displayName, (teamNumber*4) + 1, team.getColor()));
     }
 
     public void addPlayer(Player player) {
@@ -57,7 +57,7 @@ public class MCUTeam{
         team.addEntry(teamPlayer.getPlayer().getDisplayName());
         teamPlayer.setTeam(this);
 
-        final int position = (teamNumber * 4) + players.size();
+        final int position = (teamNumber * 4) + 1 + players.size();
         tabManager.set(position,TabManager.createFakePlayer(player.getDisplayName(), position, player));
 
         player.sendMessage(ChatColor.GOLD + "You joined team " + displayName);
@@ -66,7 +66,7 @@ public class MCUTeam{
 
     public void removePlayer(TeamPlayer teamPlayer) {
         if (players.contains(teamPlayer)) {
-            tabManager.clear((teamNumber * 4) + players.size());
+            tabManager.clear((teamNumber * 4) + 1 + players.size());
             players.remove(teamPlayer);
             team.removeEntry(teamPlayer.getPlayer().getName());
             teamPlayer.setTeam(null);
