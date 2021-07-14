@@ -15,7 +15,6 @@ net\jetcobblestone\pluginmcu\util\annotationscheduling\TickTask.class
 net\jetcobblestone\pluginmcu\commands\tabs\JoinTeamTab.class
 net\jetcobblestone\pluginmcu\team\ColourMapper.class
 net\jetcobblestone\pluginmcu\util\annotationscheduling\ITickable.class
-net\jetcobblestone\pluginmcu\tab\TabListener.class
 net\jetcobblestone\pluginmcu\tab\TabManager.class
 net\jetcobblestone\pluginmcu\commands\JoinTeam.class
 net\jetcobblestone\pluginmcu\tab\OrderCounter.class

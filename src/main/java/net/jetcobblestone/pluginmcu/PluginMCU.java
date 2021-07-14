@@ -6,7 +6,6 @@ import net.jetcobblestone.pluginmcu.commands.RenameTeam;
 import net.jetcobblestone.pluginmcu.commands.StartEvent;
 import net.jetcobblestone.pluginmcu.commands.tabs.JoinTeamTab;
 import net.jetcobblestone.pluginmcu.event.MCUEventManager;
-import net.jetcobblestone.pluginmcu.tab.TabListener;
 import net.jetcobblestone.pluginmcu.tab.TabManager;
 import net.jetcobblestone.pluginmcu.team.TeamListener;
 import net.jetcobblestone.pluginmcu.team.TeamManager;
@@ -19,16 +18,15 @@ import org.bukkit.scoreboard.Objective;
 public class PluginMCU extends JavaPlugin {
 
     private ScheduleManager scheduleManager;
-    private TeamManager teamManager;
     private TabManager tabManager;
+    private TeamManager teamManager;
     private MCUEventManager eventManager;
 
     @Override
     public void onEnable() {
         scheduleManager = new ScheduleManager(this);
-        tabManager = new TabManager();
+        tabManager = new TabManager(this);
         teamManager = new TeamManager(tabManager);
-        tabManager.init(teamManager);
         eventManager = new MCUEventManager(this, teamManager, scheduleManager);
 
         registerCommands();
@@ -39,6 +37,7 @@ public class PluginMCU extends JavaPlugin {
     public void onDisable() {
         Objective obj = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("sidebar");
         if (obj != null) obj.unregister();
+        tabManager.setSize(0);
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -51,7 +50,7 @@ public class PluginMCU extends JavaPlugin {
     }
 
     private void registerListeners() {
-        getServer().getPluginManager().registerEvents(new TabListener(this, tabManager), this);
+        getServer().getPluginManager().registerEvents(tabManager, this);
         getServer().getPluginManager().registerEvents(new TeamListener(teamManager), this);
     }
 }

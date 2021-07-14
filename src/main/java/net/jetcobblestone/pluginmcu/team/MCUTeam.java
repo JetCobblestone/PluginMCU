@@ -17,20 +17,22 @@ public class MCUTeam{
     @Getter private final String colourName;
     @Getter private String displayName;
     @Getter private final Team team;
-    @Getter private final String teamName;
+    private final int teamNumber;
 
-    public MCUTeam(String colourName, ChatColor colour, TeamManager teamManager, TabManager tabManager, String teamName) {
+    public MCUTeam(String colourName, ChatColor colour, int teamNumber, TeamManager teamManager, TabManager tabManager) {
         this.colourName = colourName;
+        this.teamNumber = teamNumber;
         this.teamManager = teamManager;
-        this.team = teamManager.getTeamBoard().registerNewTeam(teamName);
         this.tabManager = tabManager;
-        this.teamName = teamName;
+        this.team = teamManager.getTeamBoard().registerNewTeam(colourName);
+
         team.setColor(colour);
-        displayName = team.getColor() + "" + ChatColor.BOLD + colourName;
+        setDisplayName(colourName);
     }
 
     public void setDisplayName(String name) {
         displayName = team.getColor() + "" + ChatColor.BOLD + name;
+        tabManager.set(teamNumber*4, TabManager.getFromColour(displayName, teamNumber*4, team.getColor()));
     }
 
     public void addPlayer(Player player) {
@@ -54,12 +56,17 @@ public class MCUTeam{
         players.add(teamPlayer);
         team.addEntry(teamPlayer.getPlayer().getDisplayName());
         teamPlayer.setTeam(this);
+
+        final int position = (teamNumber * 4) + players.size();
+        tabManager.set(position,TabManager.createFakePlayer(player.getDisplayName(), position, player));
+
         player.sendMessage(ChatColor.GOLD + "You joined team " + displayName);
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
     }
 
     public void removePlayer(TeamPlayer teamPlayer) {
         if (players.contains(teamPlayer)) {
+            tabManager.clear((teamNumber * 4) + players.size());
             players.remove(teamPlayer);
             team.removeEntry(teamPlayer.getPlayer().getName());
             teamPlayer.setTeam(null);

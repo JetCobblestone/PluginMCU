@@ -16,19 +16,20 @@ public class TeamManager {
     private final Map<UUID, TeamPlayer> teamPlayerMap = new HashMap<>();
 
     public TeamManager(TabManager tabManager) {
-        final String[] colourStrings = ColourMapper.getColourNames();
-        final OrderCounter orderCounter = new OrderCounter(2);
-        orderCounter.inc(1);
+        tabManager.setSize(24);
 
-        for (final String colour : colourStrings) {
-            final String name = orderCounter.get();
-            final Team team = teamBoard.getTeam(name);
+        final String[] colourStrings = ColourMapper.getColourNames();
+
+        for (int i = 0, colourStringsLength = colourStrings.length; i < colourStringsLength; i++) {
+            String colour = colourStrings[i];
+            final Team team = teamBoard.getTeam(colour);
             if (team != null) {
                 team.unregister();
             }
-            teamsList.add(new MCUTeam(colour, ColourMapper.colourFromString(colour), this, tabManager, name));
-            orderCounter.inc(4);
+            final MCUTeam mcuTeam = new MCUTeam(colour, ColourMapper.colourFromString(colour), i,this, tabManager);
+            teamsList.add(mcuTeam);
         }
+
         for (Player player : Bukkit.getOnlinePlayers()) {
             registerPlayer(player);
         }
