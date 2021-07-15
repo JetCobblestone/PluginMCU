@@ -75,7 +75,7 @@ public class MCUTeam {
 
 
         final int position = (teamNumber * 4) + 1 + players.size();
-        tabManager.set(position,TabManager.createFakePlayer(player.getDisplayName(), position, player));
+        tabManager.set(player.getDisplayName(), position, player);
 
         player.sendMessage(ChatColor.GOLD + "You joined team " + displayName);
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
@@ -92,7 +92,7 @@ public class MCUTeam {
                 }
                 else {
                     Player next = players.get(i).getPlayer();
-                    tabManager.set(shift+i, TabManager.createFakePlayer(next.getDisplayName(), shift + i ,next));
+                    tabManager.set(next.getDisplayName(), shift+i, next);
                 }
             }
 

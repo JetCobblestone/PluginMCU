@@ -3,6 +3,7 @@ package net.jetcobblestone.pluginmcu.tab;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.*;
 import com.mojang.datafixers.util.Pair;
@@ -47,20 +48,26 @@ public class TabManager implements Listener {
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(plugin, PacketType.Play.Server.NAMED_ENTITY_SPAWN) {
             @Override
             public void onPacketSending(PacketEvent event) {
+                Bukkit.getLogger().info("Packet triggered");
+                final WrapperPlayServerNamedEntitySpawn wrapper = new WrapperPlayServerNamedEntitySpawn(event.getPacket());
+                final Player packetReceiver = event.getPlayer();
+                final Player spawningIn = Bukkit.getPlayer(wrapper.getPlayerUUID());
 
-                final WrapperPlayServerNamedEntitySpawn wrapper = new WrapperPlayServerNamedEntitySpawn();
-                final Entity entity = wrapper.getEntity(event);
-                if (entity.getType() == EntityType.PLAYER) {
-                    final Player packetReceiver = event.getPlayer();
-                    final Player spawningIn = (Player) entity;
+                packetReceiver.sendMessage("Attempting to spawn in " + spawningIn.getDisplayName());
 
-                    final WrapperPlayServerPlayerInfo addPlayerPacket = new WrapperPlayServerPlayerInfo();
-                    addPlayerPacket.setAction(EnumWrappers.PlayerInfoAction.ADD_PLAYER);
-                    final List<PlayerInfoData> toAdd = new ArrayList<>();
-                    toAdd.add(getPlayerInfo(spawningIn));
-                    addPlayerPacket.setData(toAdd);
-                    addPlayerPacket.sendPacket(packetReceiver);
-                }
+                final WrapperPlayServerPlayerInfo addPlayerPacket = new WrapperPlayServerPlayerInfo();
+                addPlayerPacket.setAction(EnumWrappers.PlayerInfoAction.ADD_PLAYER);
+                final List<PlayerInfoData> dataList = new ArrayList<>();
+                dataList.add(getPlayerInfo(spawningIn));
+                addPlayerPacket.setData(dataList);
+                addPlayerPacket.sendPacket(packetReceiver);
+
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                    final WrapperPlayServerPlayerInfo removePlayerPacket = new WrapperPlayServerPlayerInfo();
+                    removePlayerPacket.setAction(EnumWrappers.PlayerInfoAction.REMOVE_PLAYER);
+                    removePlayerPacket.setData(dataList);
+                    removePlayerPacket.sendPacket(packetReceiver);
+                }, 1);
 
             }
         });
@@ -200,8 +207,16 @@ public class TabManager implements Listener {
         updatePacket.sendPacketAll();
 
         updateMap.put(i, data);
+    }
 
+    public void set(String name, int i, Player player) {
+        set(i, createFakePlayer(name, i, player));
 
+        final WrapperPlayServerEntityMetadata metaDataPacket = new WrapperPlayServerEntityMetadata();
+        final WrappedDataWatcher dataWatcher = WrappedDataWatcher.getEntityWatcher(player);
+        metaDataPacket.setMetadata(dataWatcher.getWatchableObjects());
+        metaDataPacket.setEntityID(player.getEntityId());
+        metaDataPacket.sendPacketAll();
     }
 
     public void clear(int i) {
