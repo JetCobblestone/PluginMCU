@@ -1,5 +1,6 @@
 package net.jetcobblestone.pluginmcu.util;
 
+import net.jetcobblestone.pluginmcu.packets.WrapperPlayServerScoreboardScore;
 import org.bukkit.Bukkit;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -18,6 +19,7 @@ public class Sidebar {
     private static int size = 0;
 
     public static void showSideBar(boolean bool) {
+
         if (bool) objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         else scoreboard.clearSlot(DisplaySlot.SIDEBAR);
     }

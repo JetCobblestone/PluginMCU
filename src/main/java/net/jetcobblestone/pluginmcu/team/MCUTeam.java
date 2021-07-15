@@ -69,7 +69,7 @@ public class MCUTeam {
         }
 
         players.add(teamPlayer);
-        team.addEntry(teamPlayer.getPlayer().getName());
+        team.addEntry(ChatColor.stripColor(teamPlayer.getPlayer().getName()));
         player.setDisplayName(team.getColor() + player.getDisplayName() + ChatColor.RESET);
         teamPlayer.setTeam(this);
 
@@ -97,7 +97,7 @@ public class MCUTeam {
             }
 
             players.remove(teamPlayer);
-            team.removeEntry(teamPlayer.getPlayer().getName());
+            team.removeEntry(ChatColor.stripColor(teamPlayer.getPlayer().getName()));
             teamPlayer.setTeam(null);
             final Player player = teamPlayer.getPlayer();
             player.setDisplayName(ChatColor.stripColor(player.getDisplayName()));
