@@ -1,11 +1,19 @@
 package net.jetcobblestone.pluginmcu.tab;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.*;
 import com.mojang.datafixers.util.Pair;
+import net.jetcobblestone.pluginmcu.packets.WrapperPlayServerEntityMetadata;
+import net.jetcobblestone.pluginmcu.packets.WrapperPlayServerNamedEntitySpawn;
 import net.jetcobblestone.pluginmcu.packets.WrapperPlayServerPlayerInfo;
 import net.jetcobblestone.pluginmcu.team.ColourMapper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -35,6 +43,27 @@ public class TabManager implements Listener {
 
         removePlayersPacket.setData(toRemove);
         removePlayersPacket.sendPacketAll();
+
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(plugin, PacketType.Play.Server.NAMED_ENTITY_SPAWN) {
+            @Override
+            public void onPacketSending(PacketEvent event) {
+
+                final WrapperPlayServerNamedEntitySpawn wrapper = new WrapperPlayServerNamedEntitySpawn();
+                final Entity entity = wrapper.getEntity(event);
+                if (entity.getType() == EntityType.PLAYER) {
+                    final Player packetReceiver = event.getPlayer();
+                    final Player spawningIn = (Player) entity;
+
+                    final WrapperPlayServerPlayerInfo addPlayerPacket = new WrapperPlayServerPlayerInfo();
+                    addPlayerPacket.setAction(EnumWrappers.PlayerInfoAction.ADD_PLAYER);
+                    final List<PlayerInfoData> toAdd = new ArrayList<>();
+                    toAdd.add(getPlayerInfo(spawningIn));
+                    addPlayerPacket.setData(toAdd);
+                    addPlayerPacket.sendPacket(packetReceiver);
+                }
+
+            }
+        });
     }
 
     @EventHandler
@@ -145,6 +174,10 @@ public class TabManager implements Listener {
         return ret.toString();
     }
 
+    public PlayerInfoData get(int i) {
+        return updateMap.get(i);
+    }
+
     public void set(int i, PlayerInfoData data) {
         if (i > size || i <= 0) {
             Bukkit.getLogger().severe("Attempted to set player in tab menu outside of the tab menu's range (" + i + ", " + size + ")");
@@ -167,6 +200,8 @@ public class TabManager implements Listener {
         updatePacket.sendPacketAll();
 
         updateMap.put(i, data);
+
+
     }
 
     public void clear(int i) {
@@ -184,7 +219,7 @@ public class TabManager implements Listener {
     }
 
     public static PlayerInfoData createFakePlayer(String name, int i, Player player) {
-        return  createFakeData(name, i, WrappedGameProfile.fromPlayer(player).getProperties().get("textures").iterator().next());
+        return createFakeData(name, i, WrappedGameProfile.fromPlayer(player).getProperties().get("textures").iterator().next());
     }
 
     public static PlayerInfoData createFakeData(String name, int i, String texture, String signature) {

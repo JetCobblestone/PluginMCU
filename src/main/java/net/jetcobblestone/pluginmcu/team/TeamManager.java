@@ -1,7 +1,6 @@
 package net.jetcobblestone.pluginmcu.team;
 
 import lombok.Getter;
-import net.jetcobblestone.pluginmcu.tab.OrderCounter;
 import net.jetcobblestone.pluginmcu.tab.TabManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

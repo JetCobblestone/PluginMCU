@@ -1,16 +1,31 @@
 package net.jetcobblestone.pluginmcu.team;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.events.PacketListener;
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.comphenix.protocol.wrappers.PlayerInfoData;
+import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import lombok.Getter;
+import net.jetcobblestone.pluginmcu.packets.WrapperPlayServerNamedEntitySpawn;
+import net.jetcobblestone.pluginmcu.packets.WrapperPlayServerPlayerInfo;
 import net.jetcobblestone.pluginmcu.tab.TabManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntitySpawnEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MCUTeam{
+public class MCUTeam {
     private final List<TeamPlayer> players = new ArrayList<>();
     private final TeamManager teamManager;
     private final TabManager tabManager;
@@ -54,8 +69,10 @@ public class MCUTeam{
         }
 
         players.add(teamPlayer);
-        team.addEntry(teamPlayer.getPlayer().getDisplayName());
+        team.addEntry(teamPlayer.getPlayer().getName());
+        player.setDisplayName(team.getColor() + player.getDisplayName() + ChatColor.RESET);
         teamPlayer.setTeam(this);
+
 
         final int position = (teamNumber * 4) + 1 + players.size();
         tabManager.set(position,TabManager.createFakePlayer(player.getDisplayName(), position, player));
@@ -66,11 +83,26 @@ public class MCUTeam{
 
     public void removePlayer(TeamPlayer teamPlayer) {
         if (players.contains(teamPlayer)) {
-            tabManager.clear((teamNumber * 4) + 1 + players.size());
+            int position = players.indexOf(teamPlayer);
+            int shift = (teamNumber*4) +1;
+
+            for (int i = position+1; i <= players.size(); i++) {
+                if (i == players.size()) {
+                    tabManager.clear(shift+i);
+                }
+                else {
+                    Player next = players.get(i).getPlayer();
+                    tabManager.set(shift+i, TabManager.createFakePlayer(next.getDisplayName(), shift + i ,next));
+                }
+            }
+
             players.remove(teamPlayer);
             team.removeEntry(teamPlayer.getPlayer().getName());
             teamPlayer.setTeam(null);
+            final Player player = teamPlayer.getPlayer();
+            player.setDisplayName(ChatColor.stripColor(player.getDisplayName()));
         }
     }
+
 
 }
