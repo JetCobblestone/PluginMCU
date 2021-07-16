@@ -18,15 +18,16 @@ package net.jetcobblestone.pluginmcu.packets;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.lang.reflect.InvocationTargetException;
-
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.google.common.base.Objects;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.UUID;
 
 public abstract class AbstractPacket {
     // The packet we will be modifying
@@ -73,15 +74,23 @@ public abstract class AbstractPacket {
         }
     }
 
-    public void sendPacketAll() {
-        try {
-            for (Player receiver : Bukkit.getOnlinePlayers()) {
-                ProtocolLibrary.getProtocolManager().sendServerPacket(receiver,
-                        getHandle());
-            }
-        } catch (InvocationTargetException e) {
-            throw new RuntimeException("Cannot send packet.", e);
+    public void sendPacketUUID(Collection<UUID> receivers) {
+        for (UUID uuid : receivers) {
+            final Player receiver = Bukkit.getPlayer(uuid);
+            if (receiver == null) continue;
+            sendPacket(receiver);
         }
+    }
+
+    public void sendPacket(Collection<? extends Player> receivers) {
+        for (Player receiver : receivers) {
+            sendPacket(receiver);
+        }
+    }
+
+
+    public void sendPacketAll() {
+        sendPacket(Bukkit.getOnlinePlayers());
     }
 
 

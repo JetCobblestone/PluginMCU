@@ -3,7 +3,6 @@ package net.jetcobblestone.pluginmcu.tab;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.*;
 import com.mojang.datafixers.util.Pair;
@@ -13,8 +12,6 @@ import net.jetcobblestone.pluginmcu.packets.WrapperPlayServerPlayerInfo;
 import net.jetcobblestone.pluginmcu.team.ColourMapper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -52,8 +49,8 @@ public class TabManager implements Listener {
                 final WrapperPlayServerNamedEntitySpawn wrapper = new WrapperPlayServerNamedEntitySpawn(event.getPacket());
                 final Player packetReceiver = event.getPlayer();
                 final Player spawningIn = Bukkit.getPlayer(wrapper.getPlayerUUID());
+                assert spawningIn != null;
 
-                packetReceiver.sendMessage("Attempting to spawn in " + spawningIn.getDisplayName());
 
                 final WrapperPlayServerPlayerInfo addPlayerPacket = new WrapperPlayServerPlayerInfo();
                 addPlayerPacket.setAction(EnumWrappers.PlayerInfoAction.ADD_PLAYER);
@@ -73,6 +70,7 @@ public class TabManager implements Listener {
         });
     }
 
+    @SuppressWarnings("unused")
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
@@ -250,63 +248,5 @@ public class TabManager implements Listener {
 
         return new PlayerInfoData(gameProfile, 0, EnumWrappers.NativeGameMode.SURVIVAL, WrappedChatComponent.fromText(display));
     }
-
-
-    /**
-    public void updateTab(Player reciever) {
-
-        final List<PlayerInfoData> playerDataList = new ArrayList<>();
-        final WrapperPlayServerPlayerInfo addPlayersPacket = new WrapperPlayServerPlayerInfo();
-        addPlayersPacket.setAction(EnumWrappers.PlayerInfoAction.ADD_PLAYER);
-
-        final OrderCounter playerCounter = new OrderCounter(2);
-
-        for (int i = 0; i < 20; i++) {
-            final Pair<String, String> graySkin = ColourMapper.getSkinfromColour(ChatColor.GRAY);
-            playerDataList.add(createFakeData("!" + playerCounter.getAndInc(), graySkin.getFirst(), graySkin.getSecond(), ""));
-        }
-
-        final List<MCUTeam> teamsList = teamManager.getTeamsList();
-        for (int i = 0; i < teamsList.size(); i++) {
-            if (i == 3) {
-                for (int j = 0; j < 8; j++) {
-                    final Pair<String, String> graySkin = ColourMapper.getSkinfromColour(ChatColor.GRAY);
-                    playerDataList.add(createFakeData("!" + playerCounter.getAndInc(), graySkin.getFirst(), graySkin.getSecond(), ""));
-                }
-            }
-
-            MCUTeam mcuTeam = teamsList.get(i);
-            final ChatColor teamColour = mcuTeam.getTeam().getColor();
-            final Pair<String, String> skin = ColourMapper.getSkinfromColour(teamColour);
-
-            final String teamName = playerCounter.getAndInc();
-            final PlayerInfoData playerData = createFakeData("!" + teamName, skin.getFirst(), skin.getSecond(), mcuTeam.getDisplayName());
-            playerDataList.add(playerData);
-
-
-            final Set<String> teamEntries = mcuTeam.getTeam().getEntries();
-
-            for (String entry : teamEntries) {
-                final Player player = Bukkit.getPlayer(entry);
-                if (player == null) continue;
-                playerDataList.add(createFakePlayer("!" + playerCounter.getAndInc(), player.getDisplayName(), player));
-            }
-
-            for (int j = 0; j < (3 - teamEntries.size()); j++) {
-                final Pair<String, String> graySkin = ColourMapper.getSkinfromColour(ChatColor.GRAY);
-                playerDataList.add(createFakeData("!" + playerCounter.getAndInc(), graySkin.getFirst(), graySkin.getSecond(), ""));
-            }
-        }
-        for (int i = 0; i < 28; i++) {
-            final Pair<String, String> graySkin = ColourMapper.getSkinfromColour(ChatColor.GRAY);
-            playerDataList.add(createFakeData("!" + playerCounter.getAndInc(), graySkin.getFirst(), graySkin.getSecond(), ""));
-        }
-
-        addPlayersPacket.setData(playerDataList);
-        addPlayersPacket.sendPacket(reciever);
-
-    }
-    **/
-
 
 }

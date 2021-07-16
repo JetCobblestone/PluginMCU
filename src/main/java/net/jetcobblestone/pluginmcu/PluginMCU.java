@@ -6,13 +6,18 @@ import net.jetcobblestone.pluginmcu.commands.RenameTeam;
 import net.jetcobblestone.pluginmcu.commands.StartEvent;
 import net.jetcobblestone.pluginmcu.commands.tabs.JoinTeamTab;
 import net.jetcobblestone.pluginmcu.event.MCUEventManager;
+import net.jetcobblestone.pluginmcu.scoreboard.BoardListener;
+import net.jetcobblestone.pluginmcu.scoreboard.PacketBoard;
 import net.jetcobblestone.pluginmcu.tab.TabManager;
 import net.jetcobblestone.pluginmcu.team.TeamListener;
 import net.jetcobblestone.pluginmcu.team.TeamManager;
 import net.jetcobblestone.pluginmcu.util.annotationscheduling.ScheduleManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scoreboard.Objective;
+
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 @SuppressWarnings("unused")
 public class PluginMCU extends JavaPlugin {
@@ -35,9 +40,11 @@ public class PluginMCU extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        Objective obj = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("sidebar");
-        if (obj != null) obj.unregister();
         tabManager.setSize(0);
+
+        for (Map.Entry<UUID, PacketBoard> entry : PacketBoard.getPlayerMap().entrySet()) {
+            entry.getValue().removePlayer(Objects.requireNonNull(Bukkit.getPlayer(entry.getKey())));
+        }
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -51,6 +58,7 @@ public class PluginMCU extends JavaPlugin {
 
     private void registerListeners() {
         getServer().getPluginManager().registerEvents(tabManager, this);
+       // getServer().getPluginManager().registerEvents(new BoardListener(), this);
         getServer().getPluginManager().registerEvents(new TeamListener(teamManager), this);
     }
 }

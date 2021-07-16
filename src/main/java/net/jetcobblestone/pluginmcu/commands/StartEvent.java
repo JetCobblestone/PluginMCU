@@ -31,8 +31,8 @@ public class StartEvent implements CommandExecutor {
             return false;
         }
 
-        //start event code
         eventManager.startEvent();
+
         return true;
     }
 
